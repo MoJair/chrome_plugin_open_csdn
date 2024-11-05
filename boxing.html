@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Music Wave Animation</title>
+<style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="waveCanvas"></canvas>
+<script>
+const canvas = document.getElementById('waveCanvas');
+const ctx = canvas.getContext('2d');
+
+// 设置canvas大小为窗口大小
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// 波形数据
+let waveData = [];
+
+// 初始化波形数据
+function initWaveData() {
+    const numPoints = 100;
+    for (let i = 0; i < numPoints; i++) {
+        waveData.push({
+            x: i * (canvas.width / numPoints),
+            y: canvas.height / 2,
+            height: Math.random() * 30 + 10
+        });
+    }
+}
+
+initWaveData();
+
+// 绘制波形
+function drawWave() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    ctx.moveTo(waveData[0].x, waveData[0].y);
+
+    for (let i = 0; i < waveData.length; i++) {
+        const point = waveData[i];
+        ctx.lineTo(point.x, point.y - point.height);
+        ctx.quadraticCurveTo(point.x, point.y, point.x, point.y + point.height);
+    }
+
+    ctx.lineTo(canvas.width, canvas.height);
+    ctx.lineTo(0, canvas.height);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(100, 149, 237, 0.8)';
+    ctx.fill();
+}
+
+// 更新波形数据
+function updateWaveData() {
+    for (let i = 0; i < waveData.length; i++) {
+        const point = waveData[i];
+        point.y += Math.sin(i * 0.1 + Date.now() * 0.001) * 5;
+    }
+}
+
+// 动画循环
+function animate() {
+    requestAnimationFrame(animate);
+    updateWaveData();
+    drawWave();
+}
+
+animate();
+</script>
+</body>
+</html>
